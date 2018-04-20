@@ -21,7 +21,7 @@ import static org.springframework.shell.table.CellMatchers.at;
 @Component
 public class DefaultTicketService implements TicketService {
 
-  Venue venue;
+  private final Venue venue;
 
   //TODO: Make the following configurable
   private static final int NO_OF_ROWS = 10;
@@ -46,9 +46,7 @@ public class DefaultTicketService implements TicketService {
 
     //TODO: use stream collect
     for (int rowIndex = 0; rowIndex < NO_OF_ROWS; rowIndex++, rowName++) {
-      for (int colIndex = 0; colIndex < NO_OF_SEATS_PER_ROW; colIndex++) {
-        seatCache.add(seatLayout[rowIndex][colIndex]);
-      }
+      seatCache.addAll(Arrays.asList(seatLayout[rowIndex]).subList(0, NO_OF_SEATS_PER_ROW));
     }
   }
 
@@ -88,9 +86,8 @@ public class DefaultTicketService implements TicketService {
       }
 
       //update the status to reserved
-      seatHold.getHolds().forEach(seat -> seat.setStatus(ReservedStatus.RESERVED));
       Reservation reservation = Reservation.newReservation()
-          .holds(seatHold.getHolds()).customerEmail(seatHold.getCustomerEmail()).build();
+          .reserves(seatHold.getHolds()).customerEmail(seatHold.getCustomerEmail()).build();
       seatHoldMap.remove(seatHoldId);
       reservationMap.put(reservation.getId(), reservation);
       return String.valueOf(reservation.getId());
@@ -108,7 +105,7 @@ public class DefaultTicketService implements TicketService {
           expiredIdList.add(key);
         }
       });
-      //remove expired holds from the map
+      //remove expired reserves from the map
       expiredIdList.forEach(seatHoldMap::remove);
     }
   }
@@ -121,8 +118,7 @@ public class DefaultTicketService implements TicketService {
             seatCache.stream().filter(
                 seat -> seat.getStatus() == ReservedStatus.UNRESERVED).findFirst();
         //find the index of that seat in the seat cache
-        result.ifPresent(seat1 -> {
-          Seat firstUnreservedSeat = seat1;
+        result.ifPresent(firstUnreservedSeat -> {
           int index = seatCache.indexOf(firstUnreservedSeat);
           List<Seat> compactableList = seatCache.subList(index, seatCache.size() - 1);
           List<Seat> fragmentedSeats = compactableList.stream().filter(seat -> seat.getStatus() != ReservedStatus.UNRESERVED).collect(Collectors.toList());

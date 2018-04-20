@@ -1,5 +1,7 @@
 package com.rentastage.ticketservice.model;
 
+import org.springframework.util.Assert;
+
 import java.util.UUID;
 
 /**
@@ -7,6 +9,7 @@ import java.util.UUID;
  */
 public class Seat {
 
+  private static final String DISPLAY_TEMPLATE = "%s%d";
   /**
    * Unique Seat ID
    */
@@ -15,12 +18,12 @@ public class Seat {
   /**
    * Row Name
    */
-  private String rowName;
+  private final String rowName;
 
   /**
    * Seat Number
    */
-  private int number;
+  private final int number;
 
   /**
    * Status of Seat
@@ -71,18 +74,24 @@ public class Seat {
     }
 
     public Builder rowName(String rowName) {
+      Assert.notNull(rowName, "Row Name cannot be null");
       this.rowName = rowName;
       return this;
     }
 
     public Builder number(int number) {
+      Assert.state(number > 0, "Row Number must be > 1");
       this.number = number;
       return this;
     }
   }
 
+  /**
+   * This method is used to display seat data in the shell
+   * @return
+   */
   @Override
   public String toString() {
-    return String.format("%s%d", rowName, number);
+    return String.format(DISPLAY_TEMPLATE, rowName, number);
   }
 }
