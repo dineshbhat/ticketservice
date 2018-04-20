@@ -1,4 +1,4 @@
-package com.rentastage.ticketservice;
+package com.rentastage.ticketservice.model;
 
 import java.util.Date;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SeatHold {
     return holds;
   }
 
-  Date getHeldAt() {
+  public Date getHeldAt() {
     return heldAt;
   }
 

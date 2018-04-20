@@ -1,6 +1,9 @@
 package com.rentastage.ticketservice;
 
+import com.rentastage.ticketservice.model.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.shell.table.*;
 import org.springframework.stereotype.Component;
 
@@ -16,12 +19,13 @@ import static org.springframework.shell.table.CellMatchers.at;
  * outside this class
  */
 @Component
-public class Venue implements TicketService {
+public class DefaultTicketService implements TicketService {
+
+  Venue venue;
+
   //TODO: Make the following configurable
   private static final int NO_OF_ROWS = 10;
   private static final int NO_OF_SEATS_PER_ROW = 34;
-
-  private Seat[][] seatLayout;
 
   private final HashMap<Integer, SeatHold> seatHoldMap = new HashMap<>();
   private final HashMap<Integer, Reservation> reservationMap = new HashMap<>();
@@ -32,18 +36,17 @@ public class Venue implements TicketService {
   @Value("${ts.holdExpiresInMins:5}")
   private int holdExpiresInMins;
 
-  public Venue() {
-    this.seatLayout = new Seat[NO_OF_ROWS][NO_OF_SEATS_PER_ROW];
+  @Autowired
+  public DefaultTicketService(Venue venue) {
+    this.venue = venue;
+    Seat[][] seatLayout = venue.getSeatLayout();
 
     //Create and initialize the seatLayout
     char rowName = 'A';
 
+    //TODO: use stream collect
     for (int rowIndex = 0; rowIndex < NO_OF_ROWS; rowIndex++, rowName++) {
       for (int colIndex = 0; colIndex < NO_OF_SEATS_PER_ROW; colIndex++) {
-        seatLayout[rowIndex][colIndex] = Seat.newSeat()
-            .rowName(String.valueOf(rowName))
-            .number(colIndex + 1)
-            .build();
         seatCache.add(seatLayout[rowIndex][colIndex]);
       }
     }
@@ -94,6 +97,7 @@ public class Venue implements TicketService {
     }
   }
 
+  @Scheduled(fixedDelay = 60000)
   private void expireSeatHolds() {
     synchronized (this) {
       ArrayList<Integer> expiredIdList = new ArrayList<>();
@@ -183,7 +187,7 @@ public class Venue implements TicketService {
     //print stage, width 15
     stringBuilder.append("||||||||||||________________||||||||||\n");
 
-    Arrays.stream(seatLayout).forEach(row -> {
+    Arrays.stream(venue.getSeatLayout()).forEach(row -> {
       //Print row id
       stringBuilder.append(row[0].getRowName()).append(" ");
       Arrays.stream(row).forEach(seat -> {

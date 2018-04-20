@@ -1,4 +1,4 @@
-package com.rentastage.ticketservice;
+package com.rentastage.ticketservice.model;
 
 import java.util.Date;
 import java.util.List;

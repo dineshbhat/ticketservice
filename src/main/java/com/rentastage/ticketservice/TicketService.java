@@ -1,5 +1,7 @@
 package com.rentastage.ticketservice;
 
+import com.rentastage.ticketservice.model.SeatHold;
+
 public interface TicketService {
   /**
    * The number of seats in the venue that are neither held nor reserved

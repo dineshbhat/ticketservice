@@ -1,4 +1,4 @@
-package com.rentastage.ticketservice;
+package com.rentastage.ticketservice.model;
 
 /**
  * Represents the reserved status of a seat

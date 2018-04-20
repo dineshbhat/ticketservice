@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.shell.jline.PromptProvider;
 
 @SpringBootApplication
+//@EnableScheduling
 public class TicketServiceApplication {
 
   public static void main(String[] args) {
