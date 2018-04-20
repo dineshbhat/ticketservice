@@ -10,25 +10,22 @@ public class Seat {
   /**
    * Unique Seat ID
    */
-  private String id;
+  private final String id;
 
   /**
    * Row Name
    */
-  private String rowName = null;
+  private String rowName;
 
   /**
    * Seat Number
    */
-  private int number = -1;
+  private int number;
 
   /**
    * Status of Seat
    */
   private ReservedStatus status = ReservedStatus.UNRESERVED;
-
-  public Seat() {
-  }
 
   private Seat(Builder builder) {
     this.rowName = builder.rowName;

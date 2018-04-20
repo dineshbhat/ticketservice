@@ -21,23 +21,16 @@ public class Venue implements TicketService {
   private static final int NO_OF_ROWS = 10;
   private static final int NO_OF_SEATS_PER_ROW = 34;
 
-  Seat[][] getSeatLayout() {
-    return seatLayout;
-  }
+  private Seat[][] seatLayout;
 
-  private Seat[][] seatLayout = null;
-
-  private HashMap<Integer, SeatHold> seatHoldMap = new HashMap<>();
-  private HashMap<Integer, Reservation> reservationMap = new HashMap<>();
+  private final HashMap<Integer, SeatHold> seatHoldMap = new HashMap<>();
+  private final HashMap<Integer, Reservation> reservationMap = new HashMap<>();
 
   //Store the seat layout linearly to make it easier to allocate/deallocate seats
-  private ArrayList<Seat> seatCache = new ArrayList<>();
+  private final ArrayList<Seat> seatCache = new ArrayList<>();
 
   @Value("${ts.holdExpiresInMins:5}")
   private int holdExpiresInMins;
-
-  private static int noOfSeatsAvailable = NO_OF_SEATS_PER_ROW * NO_OF_ROWS;
-
 
   public Venue() {
     this.seatLayout = new Seat[NO_OF_ROWS][NO_OF_SEATS_PER_ROW];
@@ -65,7 +58,7 @@ public class Venue implements TicketService {
 
   @Override
   public SeatHold findAndHoldSeats(int numSeats, String customerEmail) {
-    SeatHold seatHold = null;
+    SeatHold seatHold;
     synchronized (this) {
       if (numSeatsAvailable() < numSeats) {
         throw new TicketServiceException(String.format("Cannot hold %d seats! %d seats available", numSeats, numSeatsAvailable()));
@@ -80,8 +73,6 @@ public class Venue implements TicketService {
 
   @Override
   public String reserveSeats(int seatHoldId, String customerEmail) {
-    Reservation reservation = null;
-
     synchronized (this) {
       //verify if seatHold Exists and then reserve
       SeatHold seatHold = seatHoldMap.get(seatHoldId);
@@ -95,7 +86,7 @@ public class Venue implements TicketService {
 
       //update the status to reserved
       seatHold.getHolds().forEach(seat -> seat.setStatus(ReservedStatus.RESERVED));
-      reservation = Reservation.newReservation()
+      Reservation reservation = Reservation.newReservation()
           .holds(seatHold.getHolds()).customerEmail(seatHold.getCustomerEmail()).build();
       seatHoldMap.remove(seatHoldId);
       reservationMap.put(reservation.getId(), reservation);
@@ -109,15 +100,12 @@ public class Venue implements TicketService {
       Date expiresIn = new Date(System.currentTimeMillis() - (60 * 1000 * holdExpiresInMins));
       seatHoldMap.forEach((key, value) -> {
         if (value.getHeldAt().before(expiresIn)) {
-          value.getHolds().forEach(seat -> {
-            seat.setStatus(ReservedStatus.UNRESERVED);
-          });
+          value.getHolds().forEach(seat -> seat.setStatus(ReservedStatus.UNRESERVED));
           expiredIdList.add(key);
         }
-        ;
       });
       //remove expired holds from the map
-      expiredIdList.forEach(id -> seatHoldMap.remove(id));
+      expiredIdList.forEach(seatHoldMap::remove);
     }
   }
 
@@ -128,9 +116,9 @@ public class Venue implements TicketService {
         Optional<Seat> result =
             seatCache.stream().filter(
                 seat -> seat.getStatus() == ReservedStatus.UNRESERVED).findFirst();
-        //find the index of that seat in the seatcache
-        if (result.isPresent()) {
-          Seat firstUnreservedSeat = result.get();
+        //find the index of that seat in the seat cache
+        result.ifPresent(seat1 -> {
+          Seat firstUnreservedSeat = seat1;
           int index = seatCache.indexOf(firstUnreservedSeat);
           List<Seat> compactableList = seatCache.subList(index, seatCache.size() - 1);
           List<Seat> fragmentedSeats = compactableList.stream().filter(seat -> seat.getStatus() != ReservedStatus.UNRESERVED).collect(Collectors.toList());
@@ -140,7 +128,7 @@ public class Venue implements TicketService {
             compactableList.get(index + i).setStatus(seat.getStatus());
             seat.setStatus(ReservedStatus.UNRESERVED);
           }
-        }
+        });
       }
     }
   }

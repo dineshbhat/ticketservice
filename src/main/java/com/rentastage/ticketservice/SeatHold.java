@@ -8,13 +8,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * Represents a hold on one or more seats
  */
 public class SeatHold {
-  private int id;
+  private final int id;
 
-  private List<Seat> holds = null;
+  private List<Seat> holds;
 
-  private Date heldAt;
+  private final Date heldAt;
 
-  private String customerEmail;
+  private final String customerEmail;
 
   private SeatHold(Builder builder) {
     this.holds = builder.holds;
