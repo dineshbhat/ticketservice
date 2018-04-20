@@ -30,8 +30,8 @@ public class DefaultTicketService implements TicketService {
   //Store the seat layout linearly to make it easier to allocate/deallocate seats
   final ArrayList<Seat> seatCache = new ArrayList<>();
 
-  @Value("${ts.holdExpiresInMins:5}")
-  private int holdExpiresInMins;
+  @Value("${ts.holdExpiresInMins : 5}")
+  private int holdExpiresInMins = 5;
 
   @Autowired
   public DefaultTicketService(Venue venue) {
@@ -93,7 +93,7 @@ public class DefaultTicketService implements TicketService {
   }
 
   @Scheduled(fixedDelay = 60000)
-  private void expireSeatHolds() {
+  void expireSeatHolds() {
     synchronized (this) {
       ArrayList<Integer> expiredIdList = new ArrayList<>();
       Date expiresIn = new Date(System.currentTimeMillis() - (60 * 1000 * holdExpiresInMins));
@@ -108,7 +108,7 @@ public class DefaultTicketService implements TicketService {
     }
   }
 
-  private void compactSeatAssignments() {
+  void compactSeatAssignments() {
     synchronized (this) {
       if (numSeatsAvailable() > 0) {
         //find the first unreserved seat
@@ -131,9 +131,18 @@ public class DefaultTicketService implements TicketService {
     }
   }
 
+  /**
+   * Get the next available seats. Before getting the available seats, the expired seats are cleaned up and the fragmented
+   * seats are compacted
+   *
+   * @param numberOfSeats
+   * @return
+   */
   private List<Seat> getNextAvailableSeats(int numberOfSeats) {
     synchronized (this) {
       List<Seat> availableSeats = new ArrayList<>();
+      //need to expire ticket holds to get accurate results
+      expireSeatHolds();
       compactSeatAssignments();
       Optional<Seat> firstSeat = seatCache.stream().filter(
           seat -> seat.getStatus() == ReservedStatus.UNRESERVED).findFirst();

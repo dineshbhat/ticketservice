@@ -39,6 +39,9 @@ public class DefaultTicketServiceTest {
     assertThat("seat cache should be updated with ON_HOLD seats",
         (int)defaultTicketService.seatCache.stream().filter(seat -> seat.getStatus() == ReservedStatus.ON_HOLD).count(),
         is(holdSeats));
+    assertThat("seat cache should should not have any reserved seats",
+        (int)defaultTicketService.seatCache.stream().filter(seat -> seat.getStatus() == ReservedStatus.RESERVED).count(),
+        is(0));
     assertThat("seat hold map should have one record", defaultTicketService.seatHoldMap.size(), is(1));
     assertThat(String.format("%d seats should be on hold in the Seat Hold Record",holdSeats),
         seatHold.getHolds().size(), is(holdSeats));
@@ -60,9 +63,45 @@ public class DefaultTicketServiceTest {
     }
   }
 
+
+  @Test(expected = IllegalArgumentException.class)
+  public void invalidNumSeatdFindAndHoldSeat(){
+    defaultTicketService.findAndHoldSeats(0, "abx@d.com");
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void invalidEmailFindAndHoldSeat(){
+    defaultTicketService.findAndHoldSeats(0, null);
+  }
+
   @Test
   public void reserveSeats() {
+    int reservedSeats = 10;
+    String customerEmail = "a@b.com";
+    SeatHold seatHold = defaultTicketService.findAndHoldSeats(reservedSeats, customerEmail);
 
+    String reservationId = defaultTicketService.reserveSeats(seatHold.getId(), customerEmail);
+    assertThat(String.format("seat cache should should have %d reserved seats", reservedSeats),
+        (int)defaultTicketService.seatCache.stream().filter(seat -> seat.getStatus() == ReservedStatus.ON_HOLD).count(),
+        is(0));
+    assertThat(String.format("seat cache should should have %d reserved seats", reservedSeats),
+        (int)defaultTicketService.seatCache.stream().filter(seat -> seat.getStatus() == ReservedStatus.RESERVED).count(),
+        is(reservedSeats));
+
+    assertThat(defaultTicketService.reservationMap.size(), is(1));
+  }
+
+  @Test (expected = TicketServiceException.class)
+  public void invalidSeatHoldIdReserveSeats() {
+    defaultTicketService.reserveSeats(1,"test");
+  }
+
+  @Test (expected = TicketServiceException.class)
+  public void invalidEmailIdReserveSeats() {
+    int reservedSeats = 10;
+    String customerEmail = "a@b.com";
+    SeatHold seatHold = defaultTicketService.findAndHoldSeats(reservedSeats, customerEmail);
+    defaultTicketService.reserveSeats(seatHold.getId(),"test");
   }
 
   @Test
