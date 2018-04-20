@@ -28,7 +28,7 @@ public class TicketServiceConfig {
 
   @Bean
   public org.springframework.boot.CommandLineRunner commandLineRunner(ConfigurableEnvironment environment) {
-    return new CommandLineRunner(shell, environment);
+    return new TicketServiceCLR(shell, environment);
   }
 
   @Bean
@@ -44,18 +44,18 @@ public class TicketServiceConfig {
 
 }
 /**
- * Example CommandLineRunner that shows how overall shell behavior can be customized. In
+ * Example TicketServiceCLR that shows how overall shell behavior can be customized. In
  * this particular example, any program (process) arguments are assumed to be shell
  * commands that need to be executed (and the shell then quits).
  */
 @Order(InteractiveShellApplicationRunner.PRECEDENCE - 2)
-class CommandLineRunner implements org.springframework.boot.CommandLineRunner {
+class TicketServiceCLR implements org.springframework.boot.CommandLineRunner {
 
   private Shell shell;
 
   private final ConfigurableEnvironment environment;
 
-  public CommandLineRunner(Shell shell, ConfigurableEnvironment environment) {
+  public TicketServiceCLR(Shell shell, ConfigurableEnvironment environment) {
     this.shell = shell;
     this.environment = environment;
   }

@@ -35,7 +35,7 @@ public class Reservation {
     return reserves;
   }
 
-  public Date getHeldAt() {
+  Date getHeldAt() {
     return reservedAt;
   }
 

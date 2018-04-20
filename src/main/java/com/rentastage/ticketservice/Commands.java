@@ -32,7 +32,7 @@ public class Commands {
       @ShellOption() int numSeats,
       @ShellOption() String customerEmail
   ) {
-    SeatHold andHoldSeats = venue.findAndHoldSeats(numSeats, customerEmail);
+    venue.findAndHoldSeats(numSeats, customerEmail);
     return venue.toString();
   }
 

@@ -19,7 +19,7 @@ public class Venue implements TicketService {
   private static final int NO_OF_ROWS = 10;
   private static final int NO_OF_SEATS_PER_ROW = 34;
 
-  public Seat[][] getSeatLayout() {
+  Seat[][] getSeatLayout() {
     return seatLayout;
   }
 
@@ -31,9 +31,9 @@ public class Venue implements TicketService {
   //Store the seat layout linearly to make it easier to allocate/deallocate seats
   private ArrayList<Seat> seatCache = new ArrayList<>();
 
-  private final int HOLD_EXPIRED_IN_MINS = 5;
+  private static final int HOLD_EXPIRED_IN_MINS = 5;
 
-  private int noOfSeatsAvailable = NO_OF_SEATS_PER_ROW * NO_OF_ROWS;
+  private static int noOfSeatsAvailable = NO_OF_SEATS_PER_ROW * NO_OF_ROWS;
 
 
   public Venue() {

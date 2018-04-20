@@ -35,7 +35,7 @@ public class SeatHold {
     return holds;
   }
 
-  public Date getHeldAt() {
+  Date getHeldAt() {
     return heldAt;
   }
 
