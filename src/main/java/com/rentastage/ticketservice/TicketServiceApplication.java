@@ -16,6 +16,6 @@ public class TicketServiceApplication {
 
   @Bean
   public PromptProvider myPromptProvider() {
-    return () -> new AttributedString("Rent-A-Stage:>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
+    return () -> new AttributedString("Rent-A-Stage>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
   }
 }
