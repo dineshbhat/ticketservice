@@ -1,5 +1,6 @@
 package com.rentastage.ticketservice;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.shell.table.*;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import static org.springframework.shell.table.CellMatchers.at;
  */
 @Component
 public class Venue implements TicketService {
+  //TODO: Make the following configurable
   private static final int NO_OF_ROWS = 10;
   private static final int NO_OF_SEATS_PER_ROW = 34;
 
@@ -31,7 +33,8 @@ public class Venue implements TicketService {
   //Store the seat layout linearly to make it easier to allocate/deallocate seats
   private ArrayList<Seat> seatCache = new ArrayList<>();
 
-  private static final int HOLD_EXPIRED_IN_MINS = 5;
+  @Value("${ts.holdExpiresInMins:5}")
+  private int holdExpiresInMins;
 
   private static int noOfSeatsAvailable = NO_OF_SEATS_PER_ROW * NO_OF_ROWS;
 
@@ -103,7 +106,7 @@ public class Venue implements TicketService {
   private void expireSeatHolds() {
     synchronized (this) {
       ArrayList<Integer> expiredIdList = new ArrayList<>();
-      Date expiresIn = new Date(System.currentTimeMillis() - (60 * 1000 * HOLD_EXPIRED_IN_MINS));
+      Date expiresIn = new Date(System.currentTimeMillis() - (60 * 1000 * holdExpiresInMins));
       seatHoldMap.forEach((key, value) -> {
         if (value.getHeldAt().before(expiresIn)) {
           value.getHolds().forEach(seat -> {
