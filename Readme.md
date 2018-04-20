@@ -26,7 +26,7 @@ This application provides a ticketing service for Rent-A-Stage company.
 * This opens up a shell to execute the commands as described above
 
 ## Assumptions
-* Uses a simple "best seat available" logic, allocating seats left to right, starting from the row closest to the stage
+* Uses a simple "best seat available" logic, allocating seats left to right, starting from the row closest to the stage. The logic could be switched with a better alogrithm with a little bit of redsign.
 * When a hold expires, the seat allocations are compacted and all reservations are updated to remove fragmenation
 
 ## Design Decisions
