@@ -138,7 +138,7 @@ public class DefaultTicketService implements TicketService {
    * @param numberOfSeats
    * @return
    */
-  private List<Seat> getNextAvailableSeats(int numberOfSeats) {
+  List<Seat> getNextAvailableSeats(int numberOfSeats) {
     synchronized (this) {
       List<Seat> availableSeats = new ArrayList<>();
       //need to expire ticket holds to get accurate results
