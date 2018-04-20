@@ -1,5 +1,5 @@
 <configuration>
 	<!-- Disable most stdout logging by default -->
-	<root level="INFO">
+	<root level="TRACE">
 	</root>
 </configuration>

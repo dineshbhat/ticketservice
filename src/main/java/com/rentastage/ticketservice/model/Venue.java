@@ -1,5 +1,6 @@
 package com.rentastage.ticketservice.model;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -8,29 +9,35 @@ import org.springframework.stereotype.Component;
 @Component
 public class Venue {
   //TODO: Make the following configurable
-  private static final int NO_OF_ROWS = 10;
-  private static final int NO_OF_SEATS_PER_ROW = 34;
+
+  @Value("${ts.noOfRows ?: 10}")
+  private int noOfRows = 10;
+
+  @Value("${ts.noOfSeatsPerRow ?: 34}")
+  private int noOfSeatsPerRow = 34;
 
   private final Seat[][] seatLayout;
 
   public Venue() {
-    this.seatLayout = createSeatLayout();
+    this.seatLayout = createSeatLayout(noOfRows, noOfSeatsPerRow);
   }
 
   /**
    * Create seat layout of rows and seats. Row names are alphabetized
    *
+   * @param noOfRows
+   * @param noOfSeatsPerRow
    * @return seat layout, a 2d array of seats
    */
-  static Seat[][] createSeatLayout() {
-    Seat[][] tmpLayout = new Seat[NO_OF_ROWS][NO_OF_SEATS_PER_ROW];
+  static Seat[][] createSeatLayout(int noOfRows, int noOfSeatsPerRow) {
+    Seat[][] tmpLayout = new Seat[noOfRows][noOfSeatsPerRow];
 
     //Create and initialize the seatLayout
     //Limitations: Rows are limited to ascii character range, need a better row generator scheme
     char rowName = 'A';
 
-    for (int rowIndex = 0; rowIndex < NO_OF_ROWS; rowIndex++, rowName++) {
-      for (int colIndex = 0; colIndex < NO_OF_SEATS_PER_ROW; colIndex++) {
+    for (int rowIndex = 0; rowIndex < noOfRows; rowIndex++, rowName++) {
+      for (int colIndex = 0; colIndex < noOfSeatsPerRow; colIndex++) {
         tmpLayout[rowIndex][colIndex] = Seat.newSeat()
             .rowName(String.valueOf(rowName))
             .number(colIndex + 1)
@@ -38,6 +45,14 @@ public class Venue {
       }
     }
     return tmpLayout;
+  }
+
+  public int getNoOfRows() {
+    return noOfRows;
+  }
+
+  public int getNoOfSeatsPerRow() {
+    return noOfSeatsPerRow;
   }
 
   public Seat[][] getSeatLayout() {

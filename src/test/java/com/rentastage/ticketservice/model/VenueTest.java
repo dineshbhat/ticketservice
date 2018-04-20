@@ -11,13 +11,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class VenueTest {
 
-  @Test
-  public void createSeatLayout() {
-    Seat[][] seatLayout = Venue.createSeatLayout();
-
-    assertSeatLayout(seatLayout);
-  }
-
   private void assertSeatLayout(Seat[][] seatLayout) {
     char rowName = 'A';
 

@@ -11,6 +11,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.shell.table.CellMatchers.at;
+import static org.springframework.util.Assert.notNull;
 
 /**
  * Tickets are being reserved for an event at this Venue
@@ -23,21 +24,18 @@ public class DefaultTicketService implements TicketService {
 
   private final Venue venue;
 
-  //TODO: Make the following configurable
-  private static final int NO_OF_ROWS = 10;
-  private static final int NO_OF_SEATS_PER_ROW = 34;
-
-  private final HashMap<Integer, SeatHold> seatHoldMap = new HashMap<>();
-  private final HashMap<Integer, Reservation> reservationMap = new HashMap<>();
+  HashMap<Integer, SeatHold> seatHoldMap = new HashMap<>();
+  HashMap<Integer, Reservation> reservationMap = new HashMap<>();
 
   //Store the seat layout linearly to make it easier to allocate/deallocate seats
-  private final ArrayList<Seat> seatCache = new ArrayList<>();
+  final ArrayList<Seat> seatCache = new ArrayList<>();
 
   @Value("${ts.holdExpiresInMins:5}")
   private int holdExpiresInMins;
 
   @Autowired
   public DefaultTicketService(Venue venue) {
+    notNull(venue, "Venue cannot be null");
     this.venue = venue;
     Seat[][] seatLayout = venue.getSeatLayout();
 
@@ -45,8 +43,8 @@ public class DefaultTicketService implements TicketService {
     char rowName = 'A';
 
     //TODO: use stream collect
-    for (int rowIndex = 0; rowIndex < NO_OF_ROWS; rowIndex++, rowName++) {
-      seatCache.addAll(Arrays.asList(seatLayout[rowIndex]).subList(0, NO_OF_SEATS_PER_ROW));
+    for (int rowIndex = 0; rowIndex < venue.getNoOfRows(); rowIndex++, rowName++) {
+      seatCache.addAll(Arrays.asList(seatLayout[rowIndex]).subList(0, venue.getNoOfSeatsPerRow()));
     }
   }
 
@@ -169,8 +167,8 @@ public class DefaultTicketService implements TicketService {
   }
 
   private String getSeatHoldsView() {
-    return seatHoldMap.values().stream().map( Object::toString )
-        .collect( Collectors.joining( "\n" ) );
+    return seatHoldMap.values().stream().map(Object::toString)
+        .collect(Collectors.joining("\n"));
   }
 
   private String getReservationView() {
