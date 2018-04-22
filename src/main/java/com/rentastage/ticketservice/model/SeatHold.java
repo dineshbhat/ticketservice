@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notEmpty;
 import static org.springframework.util.Assert.notNull;
 
@@ -22,8 +23,6 @@ public class SeatHold {
 
   private SeatHold(Builder builder) {
     this.holds = builder.holds;
-    //Set the status to HOLD
-    holds.forEach(seat -> seat.setStatus(ReservedStatus.ON_HOLD));
     this.heldAt = new Date();
     this.customerEmail = builder.customerEmail;
     id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
@@ -63,7 +62,8 @@ public class SeatHold {
     public Builder holds(List<Seat> holds) {
       notNull(holds, "Holds cannot be null");
       notEmpty(holds, "Holds cannot be empty");
-      this.holds = holds;
+      holds.stream()
+              .forEach(seat -> isTrue(seat.getStatus() == ReservedStatus.ON_HOLD, "Seat status should be set to ON_HOLD"));      this.holds = holds;
       return this;
     }
 

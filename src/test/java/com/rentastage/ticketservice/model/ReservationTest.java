@@ -22,6 +22,7 @@ public class ReservationTest {
         Seat.newSeat().number(2).rowName("B").build()
     };
     String customerEmail = "a@bc.com";
+    Arrays.stream(holds).forEach(seat -> seat.setStatus(ReservedStatus.RESERVED));
     Reservation seatHold = Reservation.newReservation().reserves(Arrays.asList(holds)).customerEmail(customerEmail).build();
 
     String actual = seatHold.toString();
@@ -36,6 +37,7 @@ public class ReservationTest {
         Seat.newSeat().number(2).rowName("B").build()
     };
     String customerEmail = "a@bc.com";
+    Arrays.stream(holds).forEach(seat -> seat.setStatus(ReservedStatus.RESERVED));
     Reservation reservation = Reservation.newReservation().reserves(Arrays.asList(holds)).customerEmail(customerEmail).build();
 
     assertEquals("Incorrect Customer email!", customerEmail, reservation.getCustomerEmail());

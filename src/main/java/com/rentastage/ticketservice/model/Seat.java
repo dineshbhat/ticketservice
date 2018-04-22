@@ -28,7 +28,7 @@ public class Seat {
   /**
    * Status of Seat
    */
-  private ReservedStatus status = ReservedStatus.UNRESERVED;
+  private volatile ReservedStatus status = ReservedStatus.UNRESERVED;
 
   private Seat(Builder builder) {
     this.rowName = builder.rowName;
@@ -95,3 +95,4 @@ public class Seat {
     return String.format(DISPLAY_TEMPLATE, rowName, number);
   }
 }
+

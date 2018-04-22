@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * Tickets are being reserved for an event at this Venue
+ * Immutable once created. Only Seat status can be changed
  */
 @Component
 public class Venue {
