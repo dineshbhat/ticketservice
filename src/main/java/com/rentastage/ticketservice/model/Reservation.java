@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static org.springframework.util.Assert.isTrue;
 import static org.springframework.util.Assert.notEmpty;
 import static org.springframework.util.Assert.notNull;
 
@@ -21,8 +22,6 @@ public class Reservation {
 
   private Reservation(Builder builder) {
     this.reserves = builder.reserves;
-    //Set the status to RESERVED
-    reserves.forEach(seat -> seat.setStatus(ReservedStatus.RESERVED));
     this.reservedAt = new Date();
     this.customerEmail = builder.customerEmail;
     id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
@@ -62,6 +61,8 @@ public class Reservation {
     public Builder reserves(List<Seat> reserves) {
       notNull(reserves, "Holds cannot be null");
       notEmpty(reserves, "Holds cannot be empty");
+      reserves.stream()
+              .forEach(seat -> isTrue(seat.getStatus() == ReservedStatus.RESERVED, "Seat status should be set to RESERVED"));
       this.reserves = reserves;
       return this;
     }

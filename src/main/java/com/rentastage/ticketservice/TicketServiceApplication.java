@@ -5,10 +5,11 @@ import org.jline.utils.AttributedStyle;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.shell.jline.PromptProvider;
 
 @SpringBootApplication
-//@EnableScheduling
+@EnableScheduling
 public class TicketServiceApplication {
 
   public static void main(String[] args) {
@@ -17,6 +18,7 @@ public class TicketServiceApplication {
 
   @Bean
   public PromptProvider myPromptProvider() {
-    return () -> new AttributedString("Rent-A-Stage>", AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
+    return () -> new AttributedString("Rent-A-Stage>",
+            AttributedStyle.DEFAULT.foreground(AttributedStyle.YELLOW));
   }
 }

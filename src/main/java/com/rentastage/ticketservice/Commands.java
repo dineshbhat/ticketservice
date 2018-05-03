@@ -32,7 +32,11 @@ public class Commands {
       @ShellOption() int numSeats,
       @ShellOption() String customerEmail
   ) {
-    venue.findAndHoldSeats(numSeats, customerEmail);
+    try {
+      venue.findAndHoldSeats(numSeats, customerEmail);
+    } catch (Exception e) {
+      return e.getLocalizedMessage();
+    }
     return venue.toString();
   }
 
@@ -41,7 +45,11 @@ public class Commands {
       @ShellOption() int seatHoldId,
       @ShellOption() String customerEmail
   ) {
-    venue.reserveSeats(seatHoldId, customerEmail);
+    try {
+      venue.reserveSeats(seatHoldId, customerEmail);
+    } catch (Exception e) {
+      return e.getLocalizedMessage();
+    }
     return venue.toString();
   }
 }

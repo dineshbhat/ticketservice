@@ -18,6 +18,7 @@ public class SeatHoldTest {
         Seat.newSeat().number(2).rowName("B").build()
     };
     String customerEmail = "a@bc.com";
+    Arrays.stream(holds).forEach(seat -> seat.setStatus(ReservedStatus.ON_HOLD));
     SeatHold seatHold = SeatHold.newSeatHold().holds(Arrays.asList(holds)).customerEmail(customerEmail).build();
 
     String actual = seatHold.toString();
@@ -32,6 +33,7 @@ public class SeatHoldTest {
         Seat.newSeat().number(2).rowName("B").build()
     };
     String customerEmail = "a@bc.com";
+    Arrays.stream(holds).forEach(seat -> seat.setStatus(ReservedStatus.ON_HOLD));
     SeatHold seatHold = SeatHold.newSeatHold().holds(Arrays.asList(holds)).customerEmail(customerEmail).build();
 
     assertEquals("Incorrect Customer email!", customerEmail, seatHold.getCustomerEmail());
